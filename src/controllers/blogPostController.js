@@ -1,59 +1,62 @@
 "use strict";
 const BlogPost = require("../models/blogPostModel");
 
-module.exports.create = async (req, res, next) => {
+const create = async (req, res) => {
   try {
-    const post = await BlogPost.create(req.body);
-    res.status(201).send({ error: false, result: post });
-  } catch (err) {
-    next(err);
+    const post = new BlogPost(req.body);
+    await post.save();
+    res.status(201).send(post);
+  } catch (error) {
+    res.status(400).send({ error: error.message });
   }
 };
 
-module.exports.readAll = async (req, res, next) => {
+const readAll = async (req, res) => {
   try {
-    const posts = await BlogPost.find().populate("categoryId", "name");
-    res.send({ error: false, result: posts });
-  } catch (err) {
-    next(err);
+    const posts = await BlogPost.find().populate("categoryId");
+    res.send(posts);
+  } catch (error) {
+    res.status(400).send({ error: error.message });
   }
 };
 
-module.exports.read = async (req, res, next) => {
+const read = async (req, res) => {
   try {
-    const post = await BlogPost.findById(req.params.id).populate(
-      "categoryId",
-      "name"
-    );
-    if (!post)
-      return res.status(404).send({ error: true, message: "Post not found" });
-    res.send({ error: false, result: post });
-  } catch (err) {
-    next(err);
+    const post = await BlogPost.findById(req.params.id).populate("categoryId");
+    if (!post) {
+      return res.status(404).send({ error: "Post not found" });
+    }
+    res.send(post);
+  } catch (error) {
+    res.status(400).send({ error: error.message });
   }
 };
 
-module.exports.update = async (req, res, next) => {
+const update = async (req, res) => {
   try {
     const post = await BlogPost.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
-    if (!post)
-      return res.status(404).send({ error: true, message: "Post not found" });
-    res.send({ error: false, result: post });
-  } catch (err) {
-    next(err);
+    if (!post) {
+      return res.status(404).send({ error: "Post not found" });
+    }
+    res.send(post);
+  } catch (error) {
+    res.status(400).send({ error: error.message });
   }
 };
 
-module.exports.delete = async (req, res, next) => {
+const deletePost = async (req, res) => {
   try {
     const post = await BlogPost.findByIdAndDelete(req.params.id);
-    if (!post)
-      return res.status(404).send({ error: true, message: "Post not found" });
-    res.send({ error: false, result: post });
-  } catch (err) {
-    next(err);
+    if (!post) {
+      return res.status(404).send({ error: "Post not found" });
+    }
+    res.send({ message: "Post deleted" });
+  } catch (error) {
+    res.status(400).send({ error: error.message });
   }
 };
+
+module.exports = { create, readAll, read, update, delete: deletePost };

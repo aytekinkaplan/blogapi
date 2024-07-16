@@ -1,17 +1,18 @@
 "use strict";
 const router = require("express").Router();
-const blogCategoryController = require("../controllers/blogCategoryController");
+const {
+  create,
+  readAll,
+  read,
+  update,
+  delete: deleteCategory,
+} = require("../controllers/blogCategoryController");
 const authMiddleware = require("../middleware/authMiddleware");
 
-router
-  .route("/")
-  .post(authMiddleware, blogCategoryController.create)
-  .get(blogCategoryController.readAll);
-
-router
-  .route("/:id")
-  .get(blogCategoryController.read)
-  .put(authMiddleware, blogCategoryController.update)
-  .delete(authMiddleware, blogCategoryController.delete);
+router.post("/", authMiddleware, create);
+router.get("/", readAll);
+router.get("/:id", read);
+router.put("/:id", authMiddleware, update);
+router.delete("/:id", authMiddleware, deleteCategory);
 
 module.exports = router;

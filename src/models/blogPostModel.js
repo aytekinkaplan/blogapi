@@ -1,7 +1,7 @@
 "use strict";
 const mongoose = require("mongoose");
 
-const BlogPostSchema = new mongoose.Schema(
+const blogPostSchema = new mongoose.Schema(
   {
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -25,4 +25,6 @@ const BlogPostSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("BlogPost", BlogPostSchema);
+const BlogPost = mongoose.model("BlogPost", blogPostSchema);
+
+module.exports = BlogPost;

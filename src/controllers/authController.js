@@ -1,36 +1,37 @@
 "use strict";
-const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 
-const generateToken = (user) => {
-  return jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
-    expiresIn: "1d",
-  });
-};
+const register = async (req, res) => {
+  const { email, password } = req.body;
 
-module.exports.register = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ email, password: hashedPassword });
-    res.status(201).send({ error: false, token: generateToken(user) });
-  } catch (err) {
-    next(err);
+    const user = new User({ email, password: hashedPassword });
+    await user.save();
+    res.status(201).send({ message: "User registered successfully" });
+  } catch (error) {
+    res.status(400).send({ error: error.message });
   }
 };
 
-module.exports.login = async (req, res, next) => {
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
   try {
-    const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res
-        .status(401)
-        .send({ error: true, message: "Invalid email or password" });
+      throw new Error("Invalid email or password");
     }
-    res.send({ error: false, token: generateToken(user) });
-  } catch (err) {
-    next(err);
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+    res.send({ token });
+  } catch (error) {
+    res.status(400).send({ error: error.message });
   }
 };
+
+module.exports = { register, login };

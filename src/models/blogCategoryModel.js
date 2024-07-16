@@ -1,7 +1,7 @@
 "use strict";
 const mongoose = require("mongoose");
 
-const BlogCategorySchema = new mongoose.Schema(
+const blogCategorySchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -15,4 +15,6 @@ const BlogCategorySchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("BlogCategory", BlogCategorySchema);
+const BlogCategory = mongoose.model("BlogCategory", blogCategorySchema);
+
+module.exports = BlogCategory;

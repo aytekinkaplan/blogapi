@@ -1,13 +1,14 @@
 "use strict";
 const mongoose = require("mongoose");
 
-const UserSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
     email: {
       type: String,
       required: true,
       unique: true,
       trim: true,
+      lowercase: true,
     },
     password: {
       type: String,
@@ -15,9 +16,10 @@ const UserSchema = new mongoose.Schema(
     },
   },
   {
-    collection: "users",
     timestamps: true,
   }
 );
 
-module.exports = mongoose.model("User", UserSchema);
+const User = mongoose.model("User", userSchema);
+
+module.exports = User;
